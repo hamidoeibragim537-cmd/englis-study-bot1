@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>English Studi</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  /* ====== ПЕРЕМЕННЫЕ ТЕМЫ TELEGRAM ====== */
+  :root {
+    --tg-bg: #ffffff;
+    --tg-text: #1a1a1a;
+    --tg-hint: #8a8a8e;
+    --tg-button: #2f80ed;
+    --tg-button-text: #ffffff;
+    --tg-secondary-bg: #f2f2f7;
+    --accent: #2f80ed;
+    --accent-2: #56ccf2;
+    --success: #27ae60;
+    --fire: #ff6b35;
+    --radius: 20px;
+    --shadow: 0 8px 24px rgba(47, 128, 237, 0.25);
+  }
+
+  /* Тёмная тема Telegram */
+  body.tg-dark {
+    --tg-bg: #17212b;
+    --tg-text: #ffffff;
+    --tg-hint: #7d8b99;
+    --tg-secondary-bg: #232e3c;
+    --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Roboto', 'Segoe UI', sans-serif;
+    background: var(--tg-bg);
+    color: var(--tg-text);
+    transition: background 0.3s, color 0.3s;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  /* ====== ГРАДИЕНТНЫЙ ФОН ====== */
+  .bg-gradient {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(86, 204, 242, 0.25), transparent 60%),
+      radial-gradient(circle at 100% 100%, rgba(47, 128, 237, 0.15), transparent 50%);
+    pointer-events: none;
+  }
+
+  /* ====== КОНТЕЙНЕР ====== */
+  .screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 20px 16px;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+
+  /* ====== ИЛЛЮСТРАЦИЯ ====== */
+  .hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 12px 0 20px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-emoji {
+    font-size: 96px;
+    line-height: 1;
+    filter: drop-shadow(0 10px 20px rgba(47, 128, 237, 0.3));
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* ====== ЗАГОЛОВОК ====== */
+  .title {
+    font-size: 28px;
+    font-weight: 800;
+    text-align: center;
+    line-height: 1.25;
+    letter-spacing: -0.5px;
+    margin-bottom: 10px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .title .accent {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .wave {
+    display: inline-block;
+    animation: wave 2.5s ease-in-out infinite;
+    transform-origin: 70% 70%;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    text-align: center;
+    color: var(--tg-hint);
+    line-height: 1.5;
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  /* ====== ВЫБОР УРОВНЯ ====== */
+  .levels {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .level {
+    flex: 1;
+    background: var(--tg-secondary-bg);
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .level:active { transform: scale(0.97); }
+  .level .ico { font-size: 28px; display: block; margin-bottom: 6px; }
+  .level .name { font-size: 14px; font-weight: 600; color: var(--tg-text); }
+  .level.active {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(47,128,237,0.15), rgba(86,204,242,0.15));
+    box-shadow: 0 4px 16px rgba(47,128,237,0.2);
+  }
+
+  /* ====== СЕРИЯ ====== */
+  .streak {
+    background: var(--tg-secondary-bg);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+  .streak-left { display: flex; align-items: center; gap: 10px; }
+  .streak-ico { font-size: 24px; }
+  .streak-title { font-size: 14px; font-weight: 700; }
+  .streak-sub { font-size: 12px; color: var(--tg-hint); margin-top: 2px; }
+  .streak-count {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--fire);
+  }
+  .progress {
+    width: 100%;
+    height: 6px;
+    background: rgba(128,128,128,0.2);
+    border-radius: 3px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    border-radius: 3px;
+    transition: width 1s ease 0.6s;
+  }
+
+  /* ====== СПЕЙСЕР ====== */
+  .spacer { flex: 1; min-height: 12px; }
+
+  /* ====== КНОПКА ====== */
+  .cta {
+    width: 100%;
+    padding: 18px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--tg-button-text);
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border: none;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+    animation: fadeUp 0.6s 0.5s ease both;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .cta:active {
+    transform: scale(0.97);
+    box-shadow: 0 4px 12px rgba(47, 128, 237, 0.3);
+  }
+
+  /* ====== ССЫЛКА ====== */
+  .login-link {
+    text-align: center;
+    font-size: 13px;
+    color: var(--tg-hint);
+    margin-top: 14px;
+    padding-bottom: 8px;
+    cursor: pointer;
+    animation: fadeUp 0.6s 0.6s ease both;
+  }
+  .login-link span {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* ====== АНИМАЦИИ ====== */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  @keyframes wave {
+    0%, 100% { transform: rotate(0deg); }
+    15% { transform: rotate(20deg); }
+    30% { transform: rotate(-10deg); }
+    45% { transform: rotate(15deg); }
+    60% { transform: rotate(0deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-gradient"></div>
+
+<div class="screen">
+
+  <!-- Иллюстрация -->
+  <div class="hero">
+    <div class="hero-emoji">📚</div>
+  </div>
+
+  <!-- Заголовок -->
+  <h1 class="title">
+    Привет! <span class="wave">👋</span><br>
+    Готов учить <span class="accent">английский</span>?
+  </h1>
+  <p class="subtitle">
+    Первый урок займёт всего 5 минут.<br>Погнали!
+  </p>
+
+  <!-- Выбор уровня -->
+  <div class="levels">
+    <div class="level active" data-level="beginner">
+      <span class="ico">🌱</span>
+      <span class="name">Я новичок</span>
+    </div>
+    <div class="level" data-level="advanced">
+      <span class="ico">🚀</span>
+      <span class="name">Я уже учу</span>
+    </div>
+  </div>
+
+  <!-- Серия -->
+  <div class="streak">
+    <div>
+      <div class="streak-left">
+        <span class="streak-ico">🔥</span>
+        <div>
+          <div class="streak-title">Серия: 3 дня</div>
+          <div class="streak-sub">Не теряй прогресс!</div>
+        </div>
+      </div>
+      <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+    <div class="streak-count">3/7</div>
+  </div>
+
+  <div class="spacer"></div>
+
+  <!-- Кнопка -->
+  <button class="cta" id="startBtn">
+    Начать первый урок <span>→</span>
+  </button>
+
+  <!-- Ссылка -->
+  <div class="login-link" id="loginLink">
+    Уже есть аккаунт? <span>Войти</span>
+  </div>
+
+</div>
+
+<script>
+  const tg = window.Telegram?.WebApp;
+
+  // ====== ИНИЦИАЛИЗАЦИЯ TELEGRAM ======
+  if (tg) {
+    tg.ready();
+    tg.expand();
+    if (tg.setHeaderColor) tg.setHeaderColor('secondary_bg_color');
+    if (tg.setBackgroundColor) tg.setBackgroundColor('bg_color');
+
+    // Тема
+    if (tg.colorScheme === 'dark') {
+      document.body.classList.add('tg-dark');
+    }
+    // Применяем тему Telegram
+    if (tg.themeParams) {
+      const p = tg.themeParams;
+      const root = document.documentElement.style;
+      if (p.bg_color) root.setProperty('--tg-bg', p.bg_color);
+      if (p.text_color) root.setProperty('--tg-text', p.text_color);
+      if (p.hint_color) root.setProperty('--tg-hint', p.hint_color);
+      if (p.button_color) root.setProperty('--accent', p.button_color);
+      if (p.secondary_bg_color) root.setProperty('--tg-secondary-bg', p.secondary_bg_color);
+    }
+  }
+
+  // ====== ВЫБОР УРОВНЯ ======
+  let selectedLevel = 'beginner';
+  document.querySelectorAll('.level').forEach(el => {
+    el.addEventListener('click', () => {
+      document.querySelectorAll('.level').forEach(x => x.classList.remove('active'));
+      el.classList.add('active');
+      selectedLevel = el.dataset.level;
+      if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    });
+  });
+
+  // ====== ПРОГРЕСС-БАР ======
+  setTimeout(() => {
+    document.getElementById('progressBar').style.width = '43%'; // 3 из 7
+  }, 400);
+
+  // ====== КНОПКА СТАРТ ======
+  document.getElementById('startBtn').addEventListener('click', () => {
+    if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
+
+    if (tg) {
+      tg.sendData(JSON.stringify({ action: 'start_lesson', level: selectedLevel }));
+      // Или: tg.close();
+    } else {
+      alert('Уровень: ' + selectedLevel);
+    }
+  });
+
+  // ====== ССЫЛКА ВХОДА ======
+  document.getElementById('loginLink').addEventListener('click', () => {
+    if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+    if (tg) {
+      tg.sendData(JSON.stringify({ action: 'login' }));
+    }
+  });
+</script>
+</body>
+</html>
